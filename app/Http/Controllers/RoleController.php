@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use DB;
+use App\Models\RolePermission;
+use App\Http\Requests\StoreRole;
+use App\Http\Requests\UpdateRole;
     
 class RoleController extends Controller
 {
@@ -53,13 +55,8 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $this->validate($request, [
-            'name' => 'required|unique:roles,name',
-            'permission' => 'required',
-        ]);
-    
+    public function store(StoreRole $request)
+    {  
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($request->input('permission'));
     
@@ -92,10 +89,11 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
         $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
+        
+        $rolePermissions = RolePermission::where("role_has_permissions.role_id",$id)
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
-    
+
         return view('roles.edit',compact('role','permission','rolePermissions'));
     }
     
@@ -106,12 +104,8 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRole $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'permission' => 'required',
-        ]);
     
         $role = Role::find($id);
         $role->name = $request->input('name');
@@ -130,7 +124,7 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        DB::table("roles")->where('id',$id)->delete();
+        Role::where('id',$id)->delete();
         return redirect()->route('roles.index')
                         ->with('success','Role deleted successfully');
     }

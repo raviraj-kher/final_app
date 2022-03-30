@@ -47,13 +47,8 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUpdateProduct $request)
     {
-        request()->validate([
-            'name' => 'required',
-            'detail' => 'required',
-        ]);
-    
         Product::create($request->all());
     
         return redirect()->route('products.index')
@@ -89,13 +84,8 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
-    {
-         request()->validate([
-            'name' => 'required',
-            'detail' => 'required',
-        ]);
-    
+    public function update(StoreUpdateProduct $request, Product $product)
+    {   
         $product->update($request->all());
     
         return redirect()->route('products.index')

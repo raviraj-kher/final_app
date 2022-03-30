@@ -1,9 +1,5 @@
 @extends('layouts.app')
 @section('content')
-<?php
-    $array = Auth::user()->getRoleNames();
-    $role = trim($array,'["]');
-?>
 <div class="row">
     <div class="col-lg-12 margin-tb">
         <div class="pull-left">
@@ -54,7 +50,7 @@
             {!! Form::password('confirm-password', array('placeholder' => 'Confirm Password','class' => 'form-control')) !!}
         </div>
     </div>
-    @if($role == "Admin")
+    @if($user_role == "Admin")
     <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="form-group">
             <strong>Role:</strong>

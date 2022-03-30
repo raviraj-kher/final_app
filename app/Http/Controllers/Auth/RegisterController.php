@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Jobs\SendRegisterEmailJob;
 
 class RegisterController extends Controller
 {
@@ -64,10 +65,13 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+        $details = $data['email'];
+        dispatch(new SendRegisterEmailJob($details));
+        dd('done');
     }
 }
