@@ -11,8 +11,7 @@ use DB;
 use Hash;
 use Auth;
 use Illuminate\Support\Arr;
-use App\Http\Requests\StoreUser;
-use App\Http\Requests\UpdateUser;
+use App\Http\Requests\StoreUpdateUserRequest;
     
 class UserController extends Controller
 {
@@ -23,13 +22,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $data = User::orderBy('id','DESC')->paginate(15);
-        // echo "<pre>";
-        $user_role = Auth::user()->getRoleNames()->first();
-        // print_r($user_role);
-        // die;
-        // $user_role = $user->getRoleNames()->first();
-        return view('users.index',compact('data','user_role'))
+        $usersData = User::orderBy('id','ASC')->get();
+        $userRole = Auth::user()->getRoleNames()->first();
+    
+        return view('users.index',compact('usersData','userRole'))
         // return view('users.index',compact('data'))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
@@ -51,7 +47,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreUser $request)
+    public function store(StoreUpdateUserRequest $request)
     {
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
@@ -83,12 +79,11 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::find($id);
-        $user_role = $user->getRoleNames()->first();
 
         $roles = Role::pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
     
-        return view('users.edit',compact('user','user_role','roles','userRole'));
+        return view('users.edit',compact('user','roles','userRole'));
     }
     
     /**
@@ -98,7 +93,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUser $request, $id)
+    public function update(StoreUpdateUserRequest $request, $id)
     {
         $input = $request->all();
         if(!empty($input['password'])){ 

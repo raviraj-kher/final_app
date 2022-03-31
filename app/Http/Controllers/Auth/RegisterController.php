@@ -9,6 +9,9 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\SendRegisterEmailJob;
+use App\Mail\SendRegisterEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -48,9 +51,9 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $request)
     {
-        return Validator::make($data, [
+        return Validator::make($request, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -63,15 +66,18 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    protected function create(array $data)
+    protected function create(array $request)
     {
-        User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        $userDetails = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
         ]);
-        $details = $data['email'];
-        dispatch(new SendRegisterEmailJob($details));
-        dd('done');
+        // $details = $data['email'];
+        dispatch(new SendRegisterEmailJob($userDetails));
+        // dd('done');
+        // Mail::to($data['email'])->send(new SendRegisterEmail($user));
+
+        return $userDetails;
     }
 }

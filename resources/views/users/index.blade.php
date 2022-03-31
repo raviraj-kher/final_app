@@ -6,11 +6,11 @@
         <div class="pull-left">
             <h2>Users Management</h2>
         </div>
-        @if($user_role == "Admin")
+        @role('Admin')
         <div class="pull-right">
             <a class="btn btn-success" href="{{ route('users.create') }}"> Create New User</a>
         </div>
-        @endif
+        @endrole
     </div>
 </div>
 
@@ -28,9 +28,9 @@
         <th>Roles</th>
         <th width="280px">Action</th>
     </tr>
-    
-    @if($user_role == "Admin")
-        @foreach ($data as $key => $user)
+
+    @role('Admin')
+        @foreach ($usersData as $key => $user)
         <tr>
             <td>{{ ++$i }}</td>
             <td>{{ $user->name }}</td>
@@ -45,7 +45,7 @@
             <td>
             <a class="btn btn-info" href="{{ route('users.show',$user->id) }}">Show</a>
             <a class="btn btn-primary" href="{{ route('users.edit',$user->id) }}">Edit</a>
-            @if($user_role == "Admin")
+            @if($userRole == "Admin")
                 {!! Form::open(['method' => 'DELETE','route' => ['users.destroy', $user->id],'style'=>'display:inline']) !!}
                     {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
                 {!! Form::close() !!}
@@ -70,10 +70,10 @@
             <a class="btn btn-primary" href="{{ route('users.edit',Auth::user()->id) }}">Edit</a>
             </td>
         </tr>
-    @endif
+    @endrole
 </table>
 
 
-{!! $data->render() !!}
+
 
 @endsection

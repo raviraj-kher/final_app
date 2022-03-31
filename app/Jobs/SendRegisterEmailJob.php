@@ -15,14 +15,15 @@ class SendRegisterEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public  $userDetails;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($details)
+    public function __construct($userDetails)
     {
-        $this->details = $details;
+        $this->userDetails = $userDetails;
     }
 
     /**
@@ -33,6 +34,6 @@ class SendRegisterEmailJob implements ShouldQueue
     public function handle()
     {
         $email = new SendRegisterEmail();
-        Mail::to($this->details['email'])->send($details);
+        Mail::to($this->userDetails['email'])->send($email);
     }
 }

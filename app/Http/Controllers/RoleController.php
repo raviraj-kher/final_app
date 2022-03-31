@@ -8,8 +8,7 @@ use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\RolePermission;
-use App\Http\Requests\StoreRole;
-use App\Http\Requests\UpdateRole;
+use App\Http\Requests\StoreUpdateRoleRequest;
     
 class RoleController extends Controller
 {
@@ -33,7 +32,7 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::orderBy('id','DESC')->paginate(5);
+        $roles = Role::orderBy('id','ASC')->get();
         return view('roles.index',compact('roles'))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
@@ -55,7 +54,7 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreRole $request)
+    public function store(StoreUpdateRoleRequest $request)
     {  
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($request->input('permission'));
@@ -90,9 +89,7 @@ class RoleController extends Controller
         $role = Role::find($id);
         $permission = Permission::get();
         
-        $rolePermissions = RolePermission::where("role_has_permissions.role_id",$id)
-            ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
-            ->all();
+        $rolePermissions = RolePermission::where("role_id",$id)->pluck('permission_id')->all();
 
         return view('roles.edit',compact('role','permission','rolePermissions'));
     }
@@ -104,7 +101,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRole $request, $id)
+    public function update(StoreUpdateRoleRequest $request, $id)
     {
     
         $role = Role::find($id);
