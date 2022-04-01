@@ -8,22 +8,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Mail\SendRegisterEmail;
+use App\Mail\UserRegistrationEmail;
 use Mail;
 
 class SendRegisterEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public  $userDetails;
+    protected $emaiId;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($userDetails)
+    public function __construct($emaiId)
     {
-        $this->userDetails = $userDetails;
+        $this->emaiId = $emaiId;
     }
 
     /**
@@ -32,8 +32,8 @@ class SendRegisterEmailJob implements ShouldQueue
      * @return void
      */
     public function handle()
-    {
-        $email = new SendRegisterEmail();
-        Mail::to($this->userDetails['email'])->send($email);
+    { 
+        $userEmail = new UserRegistrationEmail();
+        Mail::to($this->emaiId)->send($userEmail);
     }
 }

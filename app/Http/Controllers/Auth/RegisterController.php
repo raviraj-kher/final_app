@@ -54,12 +54,17 @@ class RegisterController extends Controller
 
     protected function register(Request $request)
     {
-        $registerUser = new User();
-        $registerUser->name = $request->name;
-        $registerUser->email = $request->email;
-        $registerUser->password = Hash::make($request->password);
-        $registerUser->save();
-        
+        $userDetails = new User();
+        $userDetails->name = $request->name;
+        $userDetails->email = $request->email;
+        $userDetails->password = Hash::make($request->password);
+        $userDetails->save();
+
+        $emaiId = $userDetails->email;
+
+        // dd($emaiId);
+        dispatch(new SendRegisterEmailJob($emaiId));
+        // $this->dispatch(new SendRegisterEmailJob($emaiId));
         return view('auth.login')->with('success','User created successfully');
     }
 
